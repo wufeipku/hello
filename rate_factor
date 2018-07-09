@@ -1,0 +1,78 @@
+import pymysql
+import pandas
+import numpy as np
+import decimal
+from pandas import DataFrame
+from matplotlib import pyplot as plt
+
+def acc_profit(close,n):
+    profit = []
+    for i in range(len(close)):
+        if i < n - 1:
+            profit.append(close[i]/close[0] - 1)
+        else:
+            profit.append(close[i]/close[i-n+1] - 1)
+    profit = np.array(profit)
+    return profit
+
+def sharp(close,n):
+    sp = []
+    profit = [np.nan]
+    for i in range(1,len(close)):
+        profit.append(close[i]/close[i-1] - 1)
+
+    for i in range(len(close)):
+        if i < n :
+            sp.append(np.nan)
+        else:
+            sp.append((close[i]/close[i-n+1]-1)**(365/n)/np.nanstd(profit[i-n+1:i+1])/np.sqrt(365/n))
+        return np.array(sp)
+
+def vol_avg(vol,close,n):
+    p = np.array(vol)*np.array(close)
+    vp = []
+    for i in range(len(p)):
+        if i < n-1:
+            vp.append(p[i])
+        else:
+            vp.append(np.mean(p[i-n+1:i+1]))
+    return np.array(vp)
+
+#def activerate(vol,close,marketcap,n):
+
+def retrace(close,n):
+    re = []
+    for i in range(len(close)):
+        if i < n - 1:
+            re.append(1-close[i]/np.max(close[0:i+1]))
+        else:
+            re.append(1-close[i]/np.max(close[i-n+1:i+1]) )
+    return np.array(re)
+
+def main():
+    con=pymysql.connect(host='39.107.248.189',user='root',passwd='Digdig@I0',db='digdig_io',port=6666)
+    cur=con.cursor(cursor=pymysql.cursors.DictCursor)
+    sql = "select day,open_p,high_p,low_p,close_p,volume,market_cap from qy_coin_data where coin_id = 1"
+    cur.execute(sql)
+    data=cur.fetchall()
+    cur.close()
+    day=[]
+    open_p=[]
+    high_p=[]
+    low_p=[]
+    close_p=[]
+    vol=[]
+    marketcap=[]
+
+    for l in data:
+        open.append(l['open'])
+        close.append(l['close'])
+        vol.append(l['vol'])
+        trade_date.append(l['trade_date'])
+
+    profit = acc_profit(close,30)
+    pyplot.plot(trade_date,profit)
+    pyplot.show()
+
+if __name__ == '__main__':
+    main()
