@@ -4,6 +4,7 @@ import decimal
 from matplotlib import pyplot
 import datetime
 import pandas as pd
+import numpy as np
 
 def main():
     con=pymysql.connect(host='39.107.248.189',user='root',passwd='Digdig@I0',db='digdig_io',port=6666)
